@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  countdowncore:
+    image: countdowncore
+    build:
+      context: .
+      dockerfile: CountdownCore\Dockerfile
+    container_name: countdowncore_v1
