@@ -20,14 +20,15 @@ namespace CountdownEngine.Solver3
             foreach (var numList in permutations)
             {
                 var numArry = numList.ToArray();
-
                 var rpnNodes = new int[Rpn.MaxRpnNodes]; for (int i = 0; i < rpnNodes.Length; i++) { rpnNodes[i] = Rpn.End; }
+
                 Solve(rpnNodes, numArry, numArry.Length - 1, 0, 0, target, solutions);
-                foreach (var r in solutions)
-                {
-                    r.RpnString = r.RpnNodes.ConvertRpnNodesToString();
-                    r.InlineString = r.RpnNodes.ConvertRpnNodesToInlineString();
-                }
+            }
+
+            foreach (var r in solutions)
+            {
+                r.RpnString = r.RpnNodes.ConvertRpnNodesToString();
+                r.InlineString = r.RpnNodes.ConvertRpnNodesToInlineString();
             }
 
             return solutions;
@@ -46,6 +47,8 @@ namespace CountdownEngine.Solver3
             var numbersLeft = numbers.Length - nextNum;
             //var s = ConvertRpnNodesToString(rpnNodes);
 
+            var result = Rpn.End;
+
             if (numbersLeft < opsLeft)
             {
                 foreach (int o in Rpn.OpCodes)
@@ -63,36 +66,25 @@ namespace CountdownEngine.Solver3
 
                     Solve(newRpnNodes, numbers, opsLeft - 1, nextNum, nextRpnNode + 1, target, solutions);
                 }
-
-                if (numbersLeft > 0)
-                {
-                    var newRpnNodes = new int[Rpn.MaxRpnNodes];
-                    Array.Copy(rpnNodes, newRpnNodes, newRpnNodes.Length);
-                    newRpnNodes[nextRpnNode] = numbers[nextNum];
-                    Solve(newRpnNodes, numbers, opsLeft, nextNum + 1, nextRpnNode + 1, target, solutions);
-                }
             }
             else
             {
-                var result = CalcRpn(rpnNodes);
-                //var t = ConvertRpnNodesToString(rpnNodes);
-                if (result >= 0)
-                {
-                    if (result == target)
-                    {
-                        solutions.Add(new Solution(rpnNodes, target));
-                    }
-                    else
-                    {
-                        if (numbersLeft > 0)
-                        {
-                            var newRpnNodes = new int[Rpn.MaxRpnNodes];
-                            Array.Copy(rpnNodes, newRpnNodes, newRpnNodes.Length);
-                            newRpnNodes[nextRpnNode] = numbers[nextNum];
-                            Solve(newRpnNodes, numbers, opsLeft, nextNum + 1, nextRpnNode + 1, target, solutions);
-                        }
-                    }
-                }
+                result = CalcRpn(rpnNodes);
+                if (result <= 0)
+                    return;
+            }
+
+            //var t = ConvertRpnNodesToString(rpnNodes);
+            if (result == target)
+            {
+                solutions.Add(new Solution(rpnNodes, target));
+            }
+            else if (numbersLeft > 0)
+            {
+                var newRpnNodes = new int[Rpn.MaxRpnNodes];
+                Array.Copy(rpnNodes, newRpnNodes, newRpnNodes.Length);
+                newRpnNodes[nextRpnNode] = numbers[nextNum];
+                Solve(newRpnNodes, numbers, opsLeft, nextNum + 1, nextRpnNode + 1, target, solutions);
             }
         }
 
@@ -102,12 +94,6 @@ namespace CountdownEngine.Solver3
             {
                 int[] stack = new int[10];
                 int sp = 0;
-
-                //for (int i=2;i<rpnNodes.Length;i++)
-                //{
-                //    if ((rpnNodes[i] == Plus || rpnNodes[i] == Mul) && rpnNodes[i - 1] > 0 && rpnNodes[i - 2] > 0 && rpnNodes[i - 1] < rpnNodes[i - 2])
-                //        throw new Exception("Erm");
-                //}
 
                 foreach (int n in rpnNodes)
                 {
