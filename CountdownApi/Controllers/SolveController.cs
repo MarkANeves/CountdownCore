@@ -1,5 +1,5 @@
 ﻿using CountdownEngine;
-using CountdownEngine.Solver3;
+using CountdownEngine.Solvers;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -28,9 +28,9 @@ namespace CountdownApi.Controllers
             IEnumerable<Solution> solutions = null;
             //IEnumerable<string> solutions=null;
             stopWatch.Start();
+            var solver = new Solver3();
             for (int i = 0; i < 1; i++)
             {
-                var solver = new Solver();
                 solutions = solver.Solve(numbers, target);
             }
             stopWatch.Stop();
@@ -38,8 +38,8 @@ namespace CountdownApi.Controllers
 
 
             var solutionsString = $"Num solutions={solutions.Count()}<br>";
-            solutionsString += $"Num calls={Solver.NumCalls}<br>";
-            solutionsString += $"Num skipped={Solver.NumSkipped}<br>";
+            solutionsString += $"Num calls={solver.NumCalls()}<br>";
+            solutionsString += $"Num skipped={solver.NumSkipped()}<br>";
             solutionsString += $"Time taken={FormatStopWatch(stopWatch)}<br>";
             solutionsString += $"Target={target}<br>";
             solutionsString += $"Numbers={string.Join(",", numbers)}<br>";

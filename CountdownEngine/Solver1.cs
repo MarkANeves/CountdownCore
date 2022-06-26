@@ -1,30 +1,68 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
-namespace CountdownEngine.Solver
+namespace CountdownEngine.Solvers
 {
-    public class Solver1
+    public class Solver1 : ISolver
     {
-        public static int NumCalls = 0;
-        public static int NumSkipped = 0;
+        private int _numCalls = 0;
+        private int _numSkipped = 0;
 
-        public IEnumerable<string> Solve(List<int> numbers, int target)
+        public IEnumerable<Solution> Solve(List<int> numbers, int target)
         {
-            var solutions = new List<string>();
+            _numCalls = 0;
+            _numSkipped = 0;
+
+            var solutions = new List<Solution>();
             var permutations = Permutater.Permutate(numbers);
 
-            NumCalls = 0;
             foreach (var numList in permutations)
             {
                 var rpnNodes = new List<RpnNode>();
-                var results = Solve(rpnNodes, numList, numList.Count-1, target);
+                var results = Solve(rpnNodes, numList, numList.Count-1, target).ToArray();
+                var c = results.Count();
                 foreach (var r in results)
-                    solutions.Add(ConvertRpnNodesToString(r));
+                {
+                    var s = ConvertRpnNodesToString(r);
+
+                    var rpnInts =  ConvertToListOfRpnInts(r);
+
+                    var solution = new Solution(rpnInts, target, _numCalls);
+                    solution.RpnString = s;
+                    solutions.Add(solution);
+                    //solutions.Add(ConvertRpnNodesToString(r));
+
+                }
             }
 
             return solutions;
+        }
+
+        private int[] ConvertToListOfRpnInts(List<RpnNode> r)
+        {
+            int[] result = new int[12];
+            int i = 0;
+            foreach (var rpnNode in r)
+            {
+                if (rpnNode.IsOp())
+                {
+                    switch (rpnNode.Op)
+                    {
+                        case '+': result[i++] = Rpn.Plus; break;
+                        case '-': result[i++] = Rpn.Minus; break;
+                        case '*': result[i++] = Rpn.Mul; break;
+                        case '/': result[i++] = Rpn.Div; break;
+                    }
+                }
+                else
+                { result[i++] = rpnNode.Value; }
+            }
+
+            result[i] = Rpn.End;
+            return result;
         }
 
         List<RpnNode> Copy(List<RpnNode> irpnNodes)
@@ -39,7 +77,7 @@ namespace CountdownEngine.Solver
 
         private IEnumerable<List<RpnNode>> Solve(List<RpnNode> rpnNodes, List<int> numbers, int opsLeft, int target)
         {
-            NumCalls++;
+            _numCalls++;
 
             if (rpnNodes.Count == 0)
             {
@@ -178,6 +216,10 @@ namespace CountdownEngine.Solver
 
             return result;
         }
+
+        public int NumCalls() => _numCalls;
+
+        public int NumSkipped() => _numSkipped;
     }
 
     abstract public class RpnNode

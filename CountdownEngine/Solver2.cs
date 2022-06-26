@@ -3,12 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CountdownEngine.Solver
+namespace CountdownEngine.Solvers
 {
     public class Solver2 : ISolver
     {
-        public static int NumCalls = 0;
-        public static int NumSkipped = 0;
+        public static int _numCalls = 0;
+        public static int _numSkipped = 0;
 
         public const int Plus = -1;
         public const int Minus = -2;
@@ -22,11 +22,12 @@ namespace CountdownEngine.Solver
 
         public IEnumerable<Solution> Solve(List<int> numbers, int target)
         {
+            _numCalls = 0;
+            _numSkipped = 0;
+
             var solutions = new List<Solution>();
             var permutations = Permutater.Permutate(numbers);
 
-            NumCalls = 0;
-            NumSkipped = 0;
             foreach (var numList in permutations)
             {
                 var numArry = numList.ToArray();
@@ -46,7 +47,7 @@ namespace CountdownEngine.Solver
 
         private IEnumerable<Solution> Solve(int[] rpnNodes, int[] numbers, int opsLeft, int nextNum, int nextRpnNode, int target)
         {
-            NumCalls++;
+            _numCalls++;
 
             if (nextNum == 0)
             {
@@ -68,7 +69,7 @@ namespace CountdownEngine.Solver
                     var i = nextRpnNode;
                     if ((o == Plus || o == Mul) && rpnNodes[i - 1] > 0 && rpnNodes[i - 2] > 0 && rpnNodes[i - 1] < rpnNodes[i - 2])
                     {
-                        NumSkipped++;
+                        _numSkipped++;
                         continue;
                     }
 
@@ -95,7 +96,7 @@ namespace CountdownEngine.Solver
                 {
                     if (result == target)
                     {
-                        yield return new Solution(rpnNodes,target, NumCalls);
+                        yield return new Solution(rpnNodes,target, _numCalls);
                     }
                     else
                     {
@@ -232,5 +233,9 @@ namespace CountdownEngine.Solver
                 throw new Exception($"Illegal RPN expression {ConvertRpnNodesToString(rpnNodes)} ({e.Message})");
             }
         }
+
+        public int NumCalls() => _numCalls;
+
+        public int NumSkipped() => _numSkipped;
     }
 }
