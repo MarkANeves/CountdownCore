@@ -3,12 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CountdownEngine.Solver2
+namespace CountdownEngine.Solver
 {
-    public class Solver
+    public class Solver2 : ISolver
     {
-        public static int numCalls = 0;
-        public static int numSkipped = 0;
+        public static int NumCalls = 0;
+        public static int NumSkipped = 0;
 
         public const int Plus = -1;
         public const int Minus = -2;
@@ -25,8 +25,8 @@ namespace CountdownEngine.Solver2
             var solutions = new List<Solution>();
             var permutations = Permutater.Permutate(numbers);
 
-            numCalls = 0;
-            numSkipped = 0;
+            NumCalls = 0;
+            NumSkipped = 0;
             foreach (var numList in permutations)
             {
                 var numArry = numList.ToArray();
@@ -46,7 +46,7 @@ namespace CountdownEngine.Solver2
 
         private IEnumerable<Solution> Solve(int[] rpnNodes, int[] numbers, int opsLeft, int nextNum, int nextRpnNode, int target)
         {
-            numCalls++;
+            NumCalls++;
 
             if (nextNum == 0)
             {
@@ -68,7 +68,7 @@ namespace CountdownEngine.Solver2
                     var i = nextRpnNode;
                     if ((o == Plus || o == Mul) && rpnNodes[i - 1] > 0 && rpnNodes[i - 2] > 0 && rpnNodes[i - 1] < rpnNodes[i - 2])
                     {
-                        numSkipped++;
+                        NumSkipped++;
                         continue;
                     }
 
@@ -95,7 +95,7 @@ namespace CountdownEngine.Solver2
                 {
                     if (result == target)
                     {
-                        yield return new Solution(rpnNodes,target);
+                        yield return new Solution(rpnNodes,target, NumCalls);
                     }
                     else
                     {

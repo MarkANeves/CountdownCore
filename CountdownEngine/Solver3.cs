@@ -1,42 +1,75 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CountdownEngine.Solver3
 {
     public class Solver
     {
-        public static int numCalls = 0;
-        public static int numSkipped = 0;
+        public static int NumCalls;
+        public static int NumSkipped;
+        private readonly object _lockObject = new object();
 
         public IEnumerable<Solution> Solve(List<int> numbers, int target)
         {
-            var solutions = new List<Solution>();
+            var comparer = new SolutionEqualityComparer();
+            var solutions = new HashSet<Solution>(comparer);
             var permutations = Permutater.Permutate(numbers);
 
-            numCalls = 0;
-            numSkipped = 0;
-            foreach (var numList in permutations)
-            {
-                var numArry = numList.ToArray();
-                var rpnNodes = new int[Rpn.MaxRpnNodes]; for (int i = 0; i < rpnNodes.Length; i++) { rpnNodes[i] = Rpn.End; }
+            NumCalls = 0;
+            NumSkipped = 0;
 
-                Solve(rpnNodes, numArry, numArry.Length - 1, 0, 0, target, solutions);
-            }
-
-            foreach (var r in solutions)
+            Solve(permutations, solutions, target);
+            //SolveParallel(permutations, solutions, target);
+            
+            foreach (var s in solutions)
             {
-                r.RpnString = r.RpnNodes.ConvertRpnNodesToString();
-                r.InlineString = r.RpnNodes.ConvertRpnNodesToInlineString();
+                s.RpnString = s.RpnNodes.ConvertRpnNodesToString();
+                s.InlineString = s.RpnNodes.ConvertRpnNodesToInlineString();
+                s.SeparateCalculationsString = s.RpnNodes.ConvertRpnNodesToSeparateCalculations()+s.CallNum+"<br>";
             }
 
             return solutions;
         }
 
-        private void Solve(int[] rpnNodes, int[] numbers, int opsLeft, int nextNum, int nextRpnNode, int target, List<Solution> solutions)
+        void Solve(IEnumerable<List<int>> permutations, ICollection<Solution> solutions, int target)
         {
-            numCalls++;
+            foreach (var numList in permutations)
+            {
+                var numbers = numList.ToArray();
+                var rpnNodes = NewRpnANodesArray();
+                Solve(rpnNodes, numbers, numbers.Length - 1, 0, 0, target, solutions);
+            }
+        }
+
+        void SolveParallel(IEnumerable<List<int>> permutations, ICollection<Solution> solutions, int target)
+        {
+            var tasks = new List<Task>();
+            foreach (var numList in permutations)
+            {
+                var numbers = numList.ToArray();
+                var rpnNodes = NewRpnANodesArray();
+                tasks.Add(Task.Run(() => Solve(rpnNodes, numbers, numbers.Length - 1, 0, 0, target, solutions)));
+            }
+
+            Task.WhenAll(tasks).Wait();
+        }
+
+        int[] NewRpnANodesArray()
+        {
+            var rpnNodes = new int[Rpn.MaxRpnNodes]; for (int i = 0; i < rpnNodes.Length; i++) { rpnNodes[i] = Rpn.End; }
+            return rpnNodes;
+        }
+
+        private void Solve(int[] rpnNodes, int[] numbers, int opsLeft, int nextNum, int nextRpnNode, int target, ICollection<Solution> solutions)
+        {
+            int callNum = Interlocked.Increment(ref NumCalls);
+
+            //if (solutions.Count > 0) return;
 
             if (nextNum == 0)
             {
@@ -53,14 +86,13 @@ namespace CountdownEngine.Solver3
             {
                 foreach (int o in Rpn.OpCodes)
                 {
-                    var newRpnNodes = new int[Rpn.MaxRpnNodes];
-                    Array.Copy(rpnNodes, newRpnNodes, newRpnNodes.Length);
+                    var newRpnNodes = Copy(rpnNodes);
                     newRpnNodes[nextRpnNode] = o;
 
                     var i = nextRpnNode;
                     if ((o == Rpn.Plus || o == Rpn.Mul) && rpnNodes[i - 1] > 0 && rpnNodes[i - 2] > 0 && rpnNodes[i - 1] < rpnNodes[i - 2])
                     {
-                        numSkipped++;
+                        Interlocked.Increment(ref NumSkipped);
                         continue;
                     }
 
@@ -77,15 +109,22 @@ namespace CountdownEngine.Solver3
             //var t = ConvertRpnNodesToString(rpnNodes);
             if (result == target)
             {
-                solutions.Add(new Solution(rpnNodes, target));
+                lock (_lockObject)
+                    solutions.Add(new Solution(rpnNodes, target, callNum));
             }
             else if (numbersLeft > 0)
             {
-                var newRpnNodes = new int[Rpn.MaxRpnNodes];
-                Array.Copy(rpnNodes, newRpnNodes, newRpnNodes.Length);
+                var newRpnNodes = Copy(rpnNodes);
                 newRpnNodes[nextRpnNode] = numbers[nextNum];
                 Solve(newRpnNodes, numbers, opsLeft, nextNum + 1, nextRpnNode + 1, target, solutions);
             }
+        }
+
+        private int[] Copy(int[] rpnNodes)
+        {
+            var newRpnNodes = new int[rpnNodes.Length];
+            Array.Copy(rpnNodes, newRpnNodes, rpnNodes.Length);
+            return newRpnNodes;
         }
 
         private int CalcRpn(int[] rpnNodes)
@@ -103,10 +142,10 @@ namespace CountdownEngine.Solver3
                             return stack[0];
 
                         int n1 = stack[--sp]; int n2 = stack[--sp];
-                        if (n == Rpn.Plus) { stack[sp++] = n2 + n1; }
+                        if (n == Rpn.Plus) { if (n2 > n1) return -1; stack[sp++] = n2 + n1; }
                         else if (n == Rpn.Minus) { if (n2 <= n1) return -1; stack[sp++] = n2 - n1; }
-                        else if (n == Rpn.Mul) { stack[sp++] = n2 * n1; }
-                        else if (n == Rpn.Div) { if (n2 % n1 != 0) return -1; stack[sp++] = n2 / n1; }
+                        else if (n == Rpn.Mul) { if (n2 > n1) return -1;  if (n1 == 1 || n2 == 1) return -1; stack[sp++] = n2 * n1; }
+                        else if (n == Rpn.Div) { if (n2 % n1 != 0 || n1 == 1) return -1; stack[sp++] = n2 / n1; }
                         else { throw new Exception($"Unknown op '{n}'"); }
                     }
                     else

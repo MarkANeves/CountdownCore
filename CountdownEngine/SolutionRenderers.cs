@@ -75,5 +75,48 @@ namespace CountdownEngine
 
             return result;
         }
+
+        public static string ConvertRpnNodesToSeparateCalculations(this int[] rpnNodes)
+        {
+            try
+            {
+                string prefix = "<br>------------------------------------------<br>";
+                string suffix = "------------------------------------------<br>";
+                string separator = "<br>";
+
+                string result=prefix;
+                int[] stack = new int[10];
+                int sp = 0;
+
+                foreach (int n in rpnNodes)
+                {
+                    if (n <= Rpn.Plus)
+                    {
+                        if (n == Rpn.End)
+                            return result+suffix;
+
+                        int n1 = stack[--sp]; int n2 = stack[--sp];
+                        if (n == Rpn.Plus) { stack[sp++] = n2 + n1; result += $"{n2}+{n1}={n2 + n1}{separator}"; }
+                        else if (n == Rpn.Minus) { stack[sp++] = n2 - n1; result += $"{n2}-{n1}={n2 - n1}{separator}"; }
+                        else if (n == Rpn.Mul) { stack[sp++] = n2 * n1; result += $"{n2}*{n1}={n2 * n1}{separator}"; }
+                        else if (n == Rpn.Div) { stack[sp++] = n2 / n1; result += $"{n2}/{n1}={n2 / n1}{separator}"; }
+                        else { throw new Exception($"Unknown op '{n}'"); }
+                    }
+                    else
+                        stack[sp++] = n;
+                }
+
+                if (sp != 0)
+                {
+                    throw new Exception($"Stack left with {sp} items");
+                }
+
+                throw new Exception("No RPN end value found");
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Illegal RPN expression {rpnNodes.ConvertRpnNodesToString()} ({e.Message})");
+            }
+        }
     }
 }

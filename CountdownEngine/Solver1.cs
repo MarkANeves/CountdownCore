@@ -3,19 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CountdownEngine.Solver1
+namespace CountdownEngine.Solver
 {
-    public class Solver
+    public class Solver1
     {
-        public static int numCalls = 0;
-        public static int numSkipped = 0;
+        public static int NumCalls = 0;
+        public static int NumSkipped = 0;
 
         public IEnumerable<string> Solve(List<int> numbers, int target)
         {
             var solutions = new List<string>();
             var permutations = Permutater.Permutate(numbers);
 
-            numCalls = 0;
+            NumCalls = 0;
             foreach (var numList in permutations)
             {
                 var rpnNodes = new List<RpnNode>();
@@ -39,7 +39,7 @@ namespace CountdownEngine.Solver1
 
         private IEnumerable<List<RpnNode>> Solve(List<RpnNode> rpnNodes, List<int> numbers, int opsLeft, int target)
         {
-            numCalls++;
+            NumCalls++;
 
             if (rpnNodes.Count == 0)
             {
