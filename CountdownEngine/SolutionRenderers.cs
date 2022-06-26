@@ -6,8 +6,10 @@ namespace CountdownEngine
 {
     public static class SolutionRenderers
     {
-        public static string ConvertRpnNodesToInlineString(this int[] rpnNodes)
+        public static string ConvertToInlineString(this Solution solution)
         {
+            var rpnNodes = solution.RpnNodes;
+
             try
             {
                 var stack = new Stack<string>(10);
@@ -53,8 +55,13 @@ namespace CountdownEngine
             }
             catch (Exception e)
             {
-                throw new Exception($"Illegal RPN expression {rpnNodes.ConvertRpnNodesToString()} ({e.Message})");
+                throw new Exception($"Illegal RPN expression {solution.ConvertToString()} ({e.Message})");
             }
+        }
+
+        public static string ConvertToString(this Solution solution)
+        {
+            return solution.RpnNodes.ConvertRpnNodesToString();
         }
 
         public static string ConvertRpnNodesToString(this int[] rpnNodes)
@@ -76,8 +83,10 @@ namespace CountdownEngine
             return result;
         }
 
-        public static string ConvertRpnNodesToSeparateCalculations(this int[] rpnNodes)
+        public static string ConvertToSeparateCalculations(this Solution solution)
         {
+            var rpnNodes = solution.RpnNodes;
+
             try
             {
                 string prefix = "<br>------------------------------------------<br>";
@@ -115,7 +124,7 @@ namespace CountdownEngine
             }
             catch (Exception e)
             {
-                throw new Exception($"Illegal RPN expression {rpnNodes.ConvertRpnNodesToString()} ({e.Message})");
+                throw new Exception($"Illegal RPN expression {solution.ConvertToString()} ({e.Message})");
             }
         }
     }

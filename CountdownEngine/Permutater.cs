@@ -7,7 +7,7 @@ namespace CountdownEngine
     {
         public static IEnumerable<List<int>> Permutate(List<int> input)
         {
-            if (input.Count == 2) // this are permutations of array of size 2
+            if (input.Count == 2) // these are permutations of array of size 2
             {
                 yield return new List<int>(input);
                 yield return new List<int> { input[1], input[0] };

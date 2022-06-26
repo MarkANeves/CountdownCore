@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,17 +23,8 @@ namespace CountdownEngine.Solvers
             Solve(permutations, solutions, target);
             //SolveParallel(permutations, solutions, target);
             
-            foreach (var s in solutions)
-            {
-                s.RpnString = s.RpnNodes.ConvertRpnNodesToString();
-                s.InlineString = s.RpnNodes.ConvertRpnNodesToInlineString();
-                s.SeparateCalculationsString = s.RpnNodes.ConvertRpnNodesToSeparateCalculations()+s.CallNum+"<br>";
-            }
-
             return solutions;
         }
-
-
 
         void Solve(IEnumerable<List<int>> permutations, ICollection<Solution> solutions, int target)
         {
@@ -80,7 +68,6 @@ namespace CountdownEngine.Solvers
             }
 
             var numbersLeft = numbers.Length - nextNum;
-            //var s = ConvertRpnNodesToString(rpnNodes);
 
             var result = Rpn.End;
 
@@ -88,15 +75,15 @@ namespace CountdownEngine.Solvers
             {
                 foreach (int o in Rpn.OpCodes)
                 {
-                    var newRpnNodes = Copy(rpnNodes);
-                    newRpnNodes[nextRpnNode] = o;
-
                     var i = nextRpnNode;
                     if ((o == Rpn.Plus || o == Rpn.Mul) && rpnNodes[i - 1] > 0 && rpnNodes[i - 2] > 0 && rpnNodes[i - 1] < rpnNodes[i - 2])
                     {
                         Interlocked.Increment(ref _numSkipped);
                         continue;
                     }
+
+                    var newRpnNodes = Copy(rpnNodes);
+                    newRpnNodes[nextRpnNode] = o;
 
                     Solve(newRpnNodes, numbers, opsLeft - 1, nextNum, nextRpnNode + 1, target, solutions);
                 }
@@ -108,7 +95,6 @@ namespace CountdownEngine.Solvers
                     return;
             }
 
-            //var t = ConvertRpnNodesToString(rpnNodes);
             if (result == target)
             {
                 lock (_lockObject)
@@ -144,10 +130,10 @@ namespace CountdownEngine.Solvers
                             return stack[0];
 
                         int n1 = stack[--sp]; int n2 = stack[--sp];
-                        if (n == Rpn.Plus) { if (n2 > n1) return -1; stack[sp++] = n2 + n1; }
+                        if      (n == Rpn.Plus)  { /*if (n2 > n1) return -1;*/ stack[sp++] = n2 + n1; }
                         else if (n == Rpn.Minus) { if (n2 <= n1) return -1; stack[sp++] = n2 - n1; }
-                        else if (n == Rpn.Mul) { if (n2 > n1) return -1;  if (n1 == 1 || n2 == 1) return -1; stack[sp++] = n2 * n1; }
-                        else if (n == Rpn.Div) { if (n2 % n1 != 0 || n1 == 1) return -1; stack[sp++] = n2 / n1; }
+                        else if (n == Rpn.Mul)   { /*if (n2 > n1) return -1;*/  if (n1 == 1 || n2 == 1) return -1; stack[sp++] = n2 * n1; }
+                        else if (n == Rpn.Div)   { if (n2 % n1 != 0 || n1 == 1) return -1; stack[sp++] = n2 / n1; }
                         else { throw new Exception($"Unknown op '{n}'"); }
                     }
                     else

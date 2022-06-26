@@ -13,12 +13,20 @@ namespace CountdownApi.Controllers
     [ApiController]
     public class SolveController : Controller
     {
+        private ISolver _solver;
+
+        public SolveController(ISolver solver)
+        {
+            _solver = solver;
+        }
+
         public ContentResult Get()
         {
             //List<int> numbers = new List<int> { 25, 75, 7, 4, 5, 3 }; var target = 640;
             //List<int> numbers = new List<int> { 75, 100, 5, 4, 7, 8 }; var target = 947;// 964;// 100;
             //List<int> numbers = new List<int> { 25, 50, 75, 100, 3, 6 }; var target = 952;// 964;// 100; // hardest ever
-            List<int> numbers = new List<int> { 25, 50, 75, 100, 3, 6 }; var target = 106;// 102;// 952;// 964;// 100;
+            //List<int> numbers = new List<int> { 25, 50, 75, 100, 3, 6 }; var target = 106;// 102;// 952;// 964;// 100;
+            List<int> numbers = new List<int> { 25, 50, 99, 100, 7, 6 }; var target = 106;// 102;// 952;// 964;// 100;
             //List<int> numbers = new List<int> { 1, 2, 3, 4, 5, 75 }; var target = 947;// can't be done
             //List<int> numbers = new List<int> { 1, 2, 3, 4, 5, 75 }; var target = 100;
             //List<int> numbers = new List<int> { 25, 75, 7 }; var target=107;
@@ -28,18 +36,17 @@ namespace CountdownApi.Controllers
             IEnumerable<Solution> solutions = null;
             //IEnumerable<string> solutions=null;
             stopWatch.Start();
-            var solver = new Solver3();
             for (int i = 0; i < 1; i++)
             {
-                solutions = solver.Solve(numbers, target);
+                solutions = _solver.Solve(numbers, target);
             }
             stopWatch.Stop();
 
 
 
             var solutionsString = $"Num solutions={solutions.Count()}<br>";
-            solutionsString += $"Num calls={solver.NumCalls()}<br>";
-            solutionsString += $"Num skipped={solver.NumSkipped()}<br>";
+            solutionsString += $"Num calls={_solver.NumCalls()}<br>";
+            solutionsString += $"Num skipped={_solver.NumSkipped()}<br>";
             solutionsString += $"Time taken={FormatStopWatch(stopWatch)}<br>";
             solutionsString += $"Target={target}<br>";
             solutionsString += $"Numbers={string.Join(",", numbers)}<br>";

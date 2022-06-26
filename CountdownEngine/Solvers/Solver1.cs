@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CountdownEngine.Solvers
 {
@@ -16,7 +14,9 @@ namespace CountdownEngine.Solvers
             _numCalls = 0;
             _numSkipped = 0;
 
-            var solutions = new List<Solution>();
+            var comparer = new SolutionEqualityComparer();
+            var solutions = new HashSet<Solution>(comparer);
+            //var solutions = new List<Solution>();
             var permutations = Permutater.Permutate(numbers);
 
             foreach (var numList in permutations)
@@ -26,12 +26,12 @@ namespace CountdownEngine.Solvers
                 var c = results.Count();
                 foreach (var r in results)
                 {
-                    var s = ConvertRpnNodesToString(r);
+                    //var s = ConvertRpnNodesToString(r);
 
                     var rpnInts =  ConvertToListOfRpnInts(r);
 
                     var solution = new Solution(rpnInts, target, _numCalls);
-                    solution.RpnString = s;
+                    //solution.RpnString = s;
                     solutions.Add(solution);
                     //solutions.Add(ConvertRpnNodesToString(r));
 
@@ -220,50 +220,5 @@ namespace CountdownEngine.Solvers
         public int NumCalls() => _numCalls;
 
         public int NumSkipped() => _numSkipped;
-    }
-
-    abstract public class RpnNode
-    {
-        public abstract bool IsOp();
-        public abstract int Value { get; }
-        public abstract char Op { get; }
-        public abstract RpnNode Copy();
-    }
-
-    public class RpnOpNode : RpnNode
-    {
-        public override char Op { get; }
-        public override int Value => throw new NotImplementedException();
-
-        public RpnOpNode(char op)
-        {
-            Op = op;
-        }
-
-        public override bool IsOp() { return true; }
-
-        public override RpnNode Copy()
-        {
-            return new RpnOpNode(this.Op);
-        }
-    }
-
-    public class RpnValueNode : RpnNode
-    {
-        public override int Value { get; }
-
-        public override char Op => throw new NotImplementedException();
-
-        public RpnValueNode(int value)
-        {
-            Value = value;
-        }
-
-        public override bool IsOp() { return false; }
-
-        public override RpnNode Copy()
-        {
-            return new RpnValueNode(this.Value);
-        }
     }
 }

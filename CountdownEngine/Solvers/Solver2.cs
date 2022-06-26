@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CountdownEngine.Solvers
 {
@@ -37,8 +35,6 @@ namespace CountdownEngine.Solvers
                 foreach (var r in results)
                 {
                     solutions.Add(r);
-                    r.RpnString = ConvertRpnNodesToString(r.RpnNodes);
-                    r.InlineString = ConvertRpnNodesToInlineString(r.RpnNodes);
                 }
             }
 
