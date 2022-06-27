@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace CountdownEngine
@@ -6,10 +7,11 @@ namespace CountdownEngine
     public class Solution
     {
         public readonly int[] RpnNodes;
+        public readonly int RpnNodesLength;
         public readonly int Target;
         public readonly string RpnString;
         public readonly string InlineString;
-        public readonly string SeparateCalculationsString;
+        public readonly List<string> SeparateCalculations;
         public readonly int NumCalls;
 
         public Solution(int[] rpnNodes, int target, int numCalls)
@@ -17,10 +19,13 @@ namespace CountdownEngine
             RpnNodes = rpnNodes;
             Target = target;
             NumCalls = numCalls;
+
+            for (int l = 0; l < RpnNodes.Length && RpnNodes[l] != Rpn.End; l++)
+                RpnNodesLength = l+1;
             
             RpnString = this.ConvertToString();
             InlineString = this.ConvertToInlineString();
-            SeparateCalculationsString = this.ConvertToSeparateCalculations();
+            SeparateCalculations = this.ConvertToSeparateCalculations();
         }
     }
 }

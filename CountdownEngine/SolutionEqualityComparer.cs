@@ -7,9 +7,9 @@ namespace CountdownEngine
     {
         public bool Equals(Solution s1, Solution s2)
         {
-            var r = s1.RpnNodes.SequenceEqual(s2.RpnNodes);
-
-            r = s1.InlineString == s2.InlineString;
+            var r = s1.RpnNodes.SequenceEqual(s2.RpnNodes) ||
+                        s1.InlineString == s2.InlineString ||
+                        s1.SeparateCalculations.SequenceEqual(s2.SeparateCalculations);
             return r;
         }
 

@@ -129,11 +129,12 @@ namespace CountdownEngine.Solvers
                         if (n == Rpn.End)
                             return stack[0];
 
-                        int n1 = stack[--sp]; int n2 = stack[--sp];
-                        if      (n == Rpn.Plus)  { /*if (n2 > n1) return -1;*/ stack[sp++] = n2 + n1; }
-                        else if (n == Rpn.Minus) { if (n2 <= n1) return -1; stack[sp++] = n2 - n1; }
-                        else if (n == Rpn.Mul)   { /*if (n2 > n1) return -1;*/  if (n1 == 1 || n2 == 1) return -1; stack[sp++] = n2 * n1; }
-                        else if (n == Rpn.Div)   { if (n2 % n1 != 0 || n1 == 1) return -1; stack[sp++] = n2 / n1; }
+                        int n1 = stack[--sp]; 
+                        int n2 = stack[--sp];
+                        if      (n == Rpn.Plus)  { if (n2 > n1)  return -1;                                    stack[sp++] = n2 + n1; }
+                        else if (n == Rpn.Minus) { if (n2 <= n1) return -1;                                    stack[sp++] = n2 - n1; }
+                        else if (n == Rpn.Mul)   { if (n2 > n1)  return -1; if (n1 == 1 || n2 == 1) return -1; stack[sp++] = n2 * n1; }
+                        else if (n == Rpn.Div)   { if (n2 % n1 != 0 || n1 == 1) return -1;                     stack[sp++] = n2 / n1; }
                         else { throw new Exception($"Unknown op '{n}'"); }
                     }
                     else

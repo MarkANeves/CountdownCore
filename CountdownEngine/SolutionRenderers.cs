@@ -83,17 +83,14 @@ namespace CountdownEngine
             return result;
         }
 
-        public static string ConvertToSeparateCalculations(this Solution solution)
+        public static List<string> ConvertToSeparateCalculations(this Solution solution)
         {
             var rpnNodes = solution.RpnNodes;
 
             try
             {
-                string prefix = "<br>------------------------------------------<br>";
-                string suffix = "------------------------------------------<br>";
-                string separator = "<br>";
-
-                string result=prefix;
+                var calculations = new List<string>();
+                
                 int[] stack = new int[10];
                 int sp = 0;
 
@@ -102,13 +99,13 @@ namespace CountdownEngine
                     if (n <= Rpn.Plus)
                     {
                         if (n == Rpn.End)
-                            return result+suffix;
+                            return calculations;
 
                         int n1 = stack[--sp]; int n2 = stack[--sp];
-                        if (n == Rpn.Plus) { stack[sp++] = n2 + n1; result += $"{n2}+{n1}={n2 + n1}{separator}"; }
-                        else if (n == Rpn.Minus) { stack[sp++] = n2 - n1; result += $"{n2}-{n1}={n2 - n1}{separator}"; }
-                        else if (n == Rpn.Mul) { stack[sp++] = n2 * n1; result += $"{n2}*{n1}={n2 * n1}{separator}"; }
-                        else if (n == Rpn.Div) { stack[sp++] = n2 / n1; result += $"{n2}/{n1}={n2 / n1}{separator}"; }
+                             if (n == Rpn.Plus)  { stack[sp++] = n2 + n1; calculations.Add($"{n2}+{n1}={n2 + n1}"); }
+                        else if (n == Rpn.Minus) { stack[sp++] = n2 - n1; calculations.Add($"{n2}-{n1}={n2 - n1}"); }
+                        else if (n == Rpn.Mul)   { stack[sp++] = n2 * n1; calculations.Add($"{n2}*{n1}={n2 * n1}"); }
+                        else if (n == Rpn.Div)   { stack[sp++] = n2 / n1; calculations.Add($"{n2}/{n1}={n2 / n1}"); }
                         else { throw new Exception($"Unknown op '{n}'"); }
                     }
                     else
