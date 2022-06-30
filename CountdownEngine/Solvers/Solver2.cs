@@ -18,7 +18,7 @@ namespace CountdownEngine.Solvers
 
         public static readonly int[] OpCodes = { Plus, Minus, Mul, Div };
 
-        public IEnumerable<Solution> Solve(List<int> numbers, int target)
+        public SolutionResults Solve(List<int> numbers, int target)
         {
             _numCalls = 0;
             _numSkipped = 0;
@@ -38,7 +38,9 @@ namespace CountdownEngine.Solvers
                 }
             }
 
-            return solutions;
+            var solutionResults = new SolutionResults(numbers, target, solutions);
+
+            return solutionResults;
         }
 
         private IEnumerable<Solution> Solve(int[] rpnNodes, int[] numbers, int opsLeft, int nextNum, int nextRpnNode, int target)

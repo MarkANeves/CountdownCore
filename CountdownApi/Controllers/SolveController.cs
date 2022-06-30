@@ -39,16 +39,15 @@ namespace CountdownApi.Controllers
 
             Stopwatch stopWatch = new Stopwatch();
 
-            IEnumerable<Solution> solutions = null;
-            //IEnumerable<string> solutions=null;
+            SolutionResults solutionResults = null;
             stopWatch.Start();
             for (int i = 0; i < 1; i++)
             {
-                solutions = _solver.Solve(numbers, target);
+                solutionResults = _solver.Solve(numbers, target);
             }
             stopWatch.Stop();
 
-            var solutionsString = $"Num solutions={solutions.Count()}<br>";
+            var solutionsString = $"Num solutions={solutionResults.Solutions.Count()}<br>";
             solutionsString += $"Num calls={_solver.NumCalls()}<br>";
             solutionsString += $"Num skipped={_solver.NumSkipped()}<br>";
             solutionsString += $"Time taken={FormatStopWatch(stopWatch)}<br>";
@@ -57,7 +56,7 @@ namespace CountdownApi.Controllers
 
             solutionsString += "<br><br>";
 
-            foreach (var s in solutions.OrderBy(x => x.RpnString.Length))
+            foreach (var s in solutionResults.Solutions.OrderBy(x => x.RpnString.Length))
             {
                 solutionsString += s.RpnString + " : " + s.InlineString;
                 foreach (var calcStr in s.SeparateCalculations)
@@ -80,9 +79,30 @@ namespace CountdownApi.Controllers
 
             int target = n[^1];
             n.RemoveAt(n.Count - 1);
-            var solutions = _solver.Solve(n, target);
-            var json = JsonConvert.SerializeObject(solutions.OrderBy(x => x.RpnNodesLength));
+            n.Sort();
+            var solutionResults = _solver.Solve(n, target);
+            //var json = JsonConvert.SerializeObject(solutionResults.Solutions.OrderBy(x => x.RpnNodesLength));
+            var json = JsonConvert.SerializeObject(solutionResults);
             return Ok(json);
+        }
+
+        [HttpGet("random")]
+        public IActionResult GetRandom()
+        {
+            var randNumbers = PickRandomNumbers();
+
+            return Get(randNumbers);
+        }
+
+        private List<int> PickRandomNumbers()
+        {
+            List<int> officialNums = new List<int> { 1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,25,50,75,100 };
+
+            var numbers = officialNums.OrderBy(a => Guid.NewGuid()).Take(6).ToList();
+            var target = (new Random()).Next(100, 999);
+            numbers.Add(target);
+
+            return numbers;
         }
 
         private string FormatStopWatch(Stopwatch stopWatch)

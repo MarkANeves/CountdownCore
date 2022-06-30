@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,7 +12,7 @@ namespace CountdownEngine.Solvers
         private int _numSkipped;
         private readonly object _lockObject = new object();
 
-        public IEnumerable<Solution> Solve(List<int> numbers, int target)
+        public SolutionResults Solve(List<int> numbers, int target)
         {
             var comparer = new SolutionEqualityComparer();
             var solutions = new HashSet<Solution>(comparer);
@@ -22,8 +23,10 @@ namespace CountdownEngine.Solvers
 
             Solve(permutations, solutions, target);
             //SolveParallel(permutations, solutions, target);
-            
-            return solutions;
+
+            var solutionResults = new SolutionResults(numbers, target, solutions.ToList());
+
+            return solutionResults;
         }
 
         void Solve(IEnumerable<List<int>> permutations, ICollection<Solution> solutions, int target)

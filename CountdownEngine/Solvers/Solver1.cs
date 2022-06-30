@@ -9,14 +9,13 @@ namespace CountdownEngine.Solvers
         private int _numCalls = 0;
         private int _numSkipped = 0;
 
-        public IEnumerable<Solution> Solve(List<int> numbers, int target)
+        public SolutionResults Solve(List<int> numbers, int target)
         {
             _numCalls = 0;
             _numSkipped = 0;
 
             var comparer = new SolutionEqualityComparer();
             var solutions = new HashSet<Solution>(comparer);
-            //var solutions = new List<Solution>();
             var permutations = Permutater.Permutate(numbers);
 
             foreach (var numList in permutations)
@@ -38,7 +37,9 @@ namespace CountdownEngine.Solvers
                 }
             }
 
-            return solutions;
+            var solutionResults = new SolutionResults(numbers, target, solutions.ToList());
+
+            return solutionResults;
         }
 
         private int[] ConvertToListOfRpnInts(List<RpnNode> r)
