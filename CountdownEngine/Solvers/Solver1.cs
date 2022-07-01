@@ -25,19 +25,13 @@ namespace CountdownEngine.Solvers
                 var c = results.Count();
                 foreach (var r in results)
                 {
-                    //var s = ConvertRpnNodesToString(r);
-
                     var rpnInts =  ConvertToListOfRpnInts(r);
-
                     var solution = new Solution(rpnInts, target, _numCalls);
-                    //solution.RpnString = s;
                     solutions.Add(solution);
-                    //solutions.Add(ConvertRpnNodesToString(r));
-
                 }
             }
 
-            var solutionResults = new SolutionResults(numbers, target, solutions.ToList());
+            var solutionResults = new SolutionResults(numbers, target, _numCalls, solutions.ToList());
 
             return solutionResults;
         }
@@ -116,7 +110,6 @@ namespace CountdownEngine.Solvers
             else
             {
                 var result = CalcRpn(rpnNodes);
-                //var t = ConvertRpnNodesToString(rpnNodes);
                 if (result >= 0)
                 {
                     if (result == target)
@@ -140,12 +133,6 @@ namespace CountdownEngine.Solvers
 
             }
         }
-/*
-
-
-
-
-*/
 
         private int CalcRpn(List<RpnNode> rpnNodes)
         {

@@ -38,7 +38,7 @@ namespace CountdownEngine.Solvers
                 }
             }
 
-            var solutionResults = new SolutionResults(numbers, target, solutions);
+            var solutionResults = new SolutionResults(numbers, target, _numCalls, solutions);
 
             return solutionResults;
         }
@@ -54,7 +54,6 @@ namespace CountdownEngine.Solvers
             }
 
             var numbersLeft = numbers.Length - nextNum;
-            //var s = ConvertRpnNodesToString(rpnNodes);
 
             if (numbersLeft < opsLeft)
             {
@@ -89,7 +88,6 @@ namespace CountdownEngine.Solvers
             else
             {
                 var result = CalcRpn(rpnNodes);
-                //var t = ConvertRpnNodesToString(rpnNodes);
                 if (result >= 0)
                 {
                     if (result == target)
@@ -111,12 +109,6 @@ namespace CountdownEngine.Solvers
                 }
             }
         }
-        /*
-
-
-
-
-        */
 
         private int CalcRpn(int[] rpnNodes)
         {
@@ -233,7 +225,6 @@ namespace CountdownEngine.Solvers
         }
 
         public int NumCalls() => _numCalls;
-
         public int NumSkipped() => _numSkipped;
     }
 }

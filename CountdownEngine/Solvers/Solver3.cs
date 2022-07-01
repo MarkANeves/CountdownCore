@@ -24,7 +24,7 @@ namespace CountdownEngine.Solvers
             Solve(permutations, solutions, target);
             //SolveParallel(permutations, solutions, target);
 
-            var solutionResults = new SolutionResults(numbers, target, solutions.ToList());
+            var solutionResults = new SolutionResults(numbers, target, _numCalls, solutions.ToList());
 
             return solutionResults;
         }
@@ -61,8 +61,6 @@ namespace CountdownEngine.Solvers
         private void Solve(int[] rpnNodes, int[] numbers, int opsLeft, int nextNum, int nextRpnNode, int target, ICollection<Solution> solutions)
         {
             int callNum = Interlocked.Increment(ref _numCalls);
-
-            //if (solutions.Count > 0) return;
 
             if (nextNum == 0)
             {

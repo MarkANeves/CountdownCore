@@ -8,7 +8,7 @@ namespace CountdownEngine
     {
         public static string ConvertToInlineString(this Solution solution)
         {
-            var rpnNodes = solution.RpnNodes;
+            var rpnNodes = solution.GetRpnNodes();
 
             try
             {
@@ -61,7 +61,7 @@ namespace CountdownEngine
 
         public static string ConvertToString(this Solution solution)
         {
-            return solution.RpnNodes.ConvertRpnNodesToString();
+            return solution.GetRpnNodes().ConvertRpnNodesToString();
         }
 
         public static string ConvertRpnNodesToString(this int[] rpnNodes)
@@ -85,7 +85,7 @@ namespace CountdownEngine
 
         public static List<string> ConvertToSeparateCalculations(this Solution solution)
         {
-            var rpnNodes = solution.RpnNodes;
+            var rpnNodes = solution.GetRpnNodes();
 
             try
             {

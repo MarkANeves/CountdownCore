@@ -23,6 +23,41 @@ namespace CountdownApi.Controllers
             _solver = solver;
         }
 
+
+        public IActionResult Get([FromQuery] List<int> n)
+        {
+            if (n.Count < 2)
+            {
+                return BadRequest("At least 2 numbers have to be supplied");
+            }
+
+            int target = n[^1];
+            n.RemoveAt(n.Count - 1);
+            n.Sort();
+            var solutionResults = _solver.Solve(n, target);
+            var json = JsonConvert.SerializeObject(solutionResults, Formatting.Indented);
+            return Ok(json);
+        }
+
+        [HttpGet("random")]
+        public IActionResult GetRandom()
+        {
+            var randNumbers = PickRandomNumbers();
+
+            return Get(randNumbers);
+        }
+
+        private List<int> PickRandomNumbers()
+        {
+            List<int> officialNums = new List<int> { 1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,25,50,75,100 };
+
+            var numbers = officialNums.OrderBy(a => Guid.NewGuid()).Take(6).ToList();
+            var target = (new Random()).Next(100, 999);
+            numbers.Add(target);
+
+            return numbers;
+        }
+
         [HttpGet("test")]
         public ContentResult Get()
         {
@@ -34,7 +69,7 @@ namespace CountdownApi.Controllers
             //List<int> numbers = new List<int> { 1, 2, 3, 4, 5, 75 }; var target = 947;// can't be done
             //List<int> numbers = new List<int> { 1, 2, 3, 4, 5, 75 }; var target = 100;
             //List<int> numbers = new List<int> { 25, 75, 7 }; var target=107;
-            List<int> numbers = new List<int> { 2, 5, 9, 25, 75, 10 }; var target=109;
+            List<int> numbers = new List<int> { 2, 5, 9, 25, 75, 10 }; var target = 109;
             //http://localhost:55599/api/solve?n=2&n=5&n=9&n=25&n=75&n=10&n=109
 
             Stopwatch stopWatch = new Stopwatch();
@@ -61,7 +96,7 @@ namespace CountdownApi.Controllers
                 solutionsString += s.RpnString + " : " + s.InlineString;
                 foreach (var calcStr in s.SeparateCalculations)
                 {
-                    solutionsString += "<br>"+calcStr;
+                    solutionsString += "<br>" + calcStr;
                 }
 
                 solutionsString += "<br>--------------------------------------<br>";
@@ -70,48 +105,12 @@ namespace CountdownApi.Controllers
             return base.Content(solutionsString, "text/html");
         }
 
-        public IActionResult Get([FromQuery] List<int> n)
-        {
-            if (n.Count < 2)
-            {
-                return BadRequest("At least 2 numbers have to be supplied");
-            }
-
-            int target = n[^1];
-            n.RemoveAt(n.Count - 1);
-            n.Sort();
-            var solutionResults = _solver.Solve(n, target);
-            //var json = JsonConvert.SerializeObject(solutionResults.Solutions.OrderBy(x => x.RpnNodesLength));
-            var json = JsonConvert.SerializeObject(solutionResults);
-            return Ok(json);
-        }
-
-        [HttpGet("random")]
-        public IActionResult GetRandom()
-        {
-            var randNumbers = PickRandomNumbers();
-
-            return Get(randNumbers);
-        }
-
-        private List<int> PickRandomNumbers()
-        {
-            List<int> officialNums = new List<int> { 1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,25,50,75,100 };
-
-            var numbers = officialNums.OrderBy(a => Guid.NewGuid()).Take(6).ToList();
-            var target = (new Random()).Next(100, 999);
-            numbers.Add(target);
-
-            return numbers;
-        }
-
         private string FormatStopWatch(Stopwatch stopWatch)
         {
             TimeSpan ts = stopWatch.Elapsed;
 
             // Format and display the TimeSpan value.
-            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-                ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
+            string elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
 
             return elapsedTime;
         }
