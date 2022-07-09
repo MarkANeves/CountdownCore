@@ -20,10 +20,23 @@ namespace CountdownApi
         }
 
         public IConfiguration Configuration { get; }
+        string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                                  policy =>
+                                  {
+                                      policy.WithOrigins("*")
+                                                    .AllowAnyHeader()
+                                                    .AllowAnyMethod();
+                                  });
+            });
+            
             services.AddControllers();
         }
 
@@ -36,6 +49,8 @@ namespace CountdownApi
             }
 
             app.UseRouting();
+
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseAuthorization();
 

@@ -23,7 +23,6 @@ namespace CountdownApi.Controllers
             _solver = solver;
         }
 
-
         public IActionResult Get([FromQuery] List<int> n)
         {
             if (n.Count < 2)
@@ -52,7 +51,7 @@ namespace CountdownApi.Controllers
             List<int> officialNums = new List<int> { 1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,25,50,75,100 };
 
             var numbers = officialNums.OrderBy(a => Guid.NewGuid()).Take(6).ToList();
-            var target = (new Random()).Next(100, 999);
+            var target = (new Random()).Next(101, 999);
             numbers.Add(target);
 
             return numbers;
