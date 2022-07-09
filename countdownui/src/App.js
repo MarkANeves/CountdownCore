@@ -10,7 +10,8 @@ export default class App extends Component {
             forecasts: [], loading: false,
             solutionResult: null,
             numbers: [3,6,25,50,75,100],
-            target: 952
+            target: 952,
+            errMsgText: null
         };
     }
 
@@ -28,26 +29,38 @@ export default class App extends Component {
     }
 
     handleSolve = async (event) => {
-        event.preventDefault();
         let n = this.state.numbers;
         let t = this.state.target;
         let url = `http://localhost:55599/api/solve?n=${n[0]}&n=${n[1]}&n=${n[2]}&n=${n[3]}&n=${n[4]}&n=${n[5]}&n=${t}`
-        this.setState({ loading: true, solutionResult: null});
-        const resp = await axios.get(url);
-        this.setState({ loading: false, solutionResult: resp.data });
-
+        try {
+            event.preventDefault();
+            this.setState({ loading: true, solutionResult: null });
+            const resp = await axios.get(url);
+            this.setState({ loading: false, solutionResult: resp.data });
+        }
+        catch (error) {
+            this.setState({ errMsgText: `${error.code} : ${error.message} : ${url}` });
+        }
     }
 
     handleSolveRandom = async (event) => {
-        event.preventDefault();
-        this.setState({ loading: true, solutionResult: null });
-        const resp = await axios.get('http://localhost:55599/api/solve/random');
-        this.setState({ loading: false, solutionResult: resp.data });
-        this.setState({ numbers: resp.data.Numbers, target: resp.data.Target });
+        const url='http://localhost:55599/api/solve/random'
+        try {
+            event.preventDefault();
+            this.setState({ loading: true, solutionResult: null, errMsgText: null });
+            const resp = await axios.get(url);
+            this.setState({ loading: false, solutionResult: resp.data });
+            this.setState({ numbers: resp.data.Numbers, target: resp.data.Target });
+        }
+        catch (error) {
+            this.setState({ errMsgText: `${error.code} : ${error.message} : ${url}` });
+        }
     }
 
     render() {
         let isLoading = this.state.loading ? <span>Thinking about it...</span> : this.state.solutionResult ? 'Finished' : 'Waiting...';
+
+        let errMsg = this.state.errMsgText ? <pre color="red">{this.state.errMsgText}</pre> : null;
 
         let result =
             <div>
@@ -64,6 +77,7 @@ export default class App extends Component {
                 <FormRandom onSubmit={this.handleSolveRandom} />
                 <hr />
                 <h1>{isLoading}</h1>
+                {errMsg}
             </div>;
 
         if (this.state.solutionResult)
