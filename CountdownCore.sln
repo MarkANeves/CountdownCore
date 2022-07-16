@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CountdownEngine", "Countdow
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CountdownApi", "CountdownApi\CountdownApi.csproj", "{6E0BA169-D65B-4EFA-BE54-A77CF44E77BE}"
 EndProject
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "countdownui", "countdownui\countdownui.esproj", "{5DEDA809-AE9D-4809-A97F-B03056996B15}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,12 +21,6 @@ Global
 		{6E0BA169-D65B-4EFA-BE54-A77CF44E77BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E0BA169-D65B-4EFA-BE54-A77CF44E77BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E0BA169-D65B-4EFA-BE54-A77CF44E77BE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5DEDA809-AE9D-4809-A97F-B03056996B15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5DEDA809-AE9D-4809-A97F-B03056996B15}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5DEDA809-AE9D-4809-A97F-B03056996B15}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{5DEDA809-AE9D-4809-A97F-B03056996B15}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5DEDA809-AE9D-4809-A97F-B03056996B15}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5DEDA809-AE9D-4809-A97F-B03056996B15}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
