@@ -22,21 +22,7 @@ steps:
   inputs:
     command: 'build'
     projects: '**/*.csproj'
-    arguments: '-o $(Build.ArtifactStagingDirectory)'
-
-- task: PowerShell@2
-  displayName: Debug
-  inputs:
-    targetType: 'inline'
-    script: |
-      "---------------------------------------"
-      dir env:
-      "---------------------------------------"
-      pwd
-      dir
-      "---------------------------------------"
-      Write-Host "Build-ArtifactStagingDirectory: $(Build.ArtifactStagingDirectory)"
-      dir "$(Build.ArtifactStagingDirectory)"
+    arguments: '-o $(Build.ArtifactStagingDirectory) --no-restore'
 
 - task: Docker@2
   inputs:
