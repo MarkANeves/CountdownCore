@@ -10,6 +10,34 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+- task: DotNetCoreCLI@2
+  displayName: DotNet Restore
+  inputs:
+    command: 'restore'
+    projects: '**/*.csproj'
+    includeNuGetOrg: true
+
+- task: DotNetCoreCLI@2
+  displayName: DotNet Build
+  inputs:
+    command: 'build'
+    projects: '**/*.csproj'
+    arguments: '-o $(Build.ArtifactStagingDirectory)'
+
+- task: PowerShell@2
+  displayName: Debug
+  inputs:
+    targetType: 'inline'
+    script: |
+      "---------------------------------------"
+      dir env:
+      "---------------------------------------"
+      pwd
+      dir
+      "---------------------------------------"
+      Write-Host "Build-ArtifactStagingDirectory: $(Build.ArtifactStagingDirectory)"
+      dir "$(Build.ArtifactStagingDirectory)"
+
 - task: Docker@2
   inputs:
     containerRegistry: 'Nevotech Acr'
