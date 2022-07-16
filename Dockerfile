@@ -1,5 +1,5 @@
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
-COPY /out .
+COPY . .
 EXPOSE 80
 ENTRYPOINT ["dotnet", "CountdownApi.dll"]
